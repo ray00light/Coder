@@ -12,7 +12,7 @@ int main() {
     std::vector<Packet> k,n,r;
 
     int numPack = 3;
-    int maxSize = 3;
+    int maxSize = 8;
     int extraPacks = 1;
 
     Coder c;
