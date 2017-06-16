@@ -12,7 +12,7 @@ int main() {
     std::vector<Packet> k,n,r;
 
     int numPack = 3;
-    int maxSize = 8;
+    int maxSize = 20;
     int extraPacks = 1;
 
     Coder c;
@@ -33,6 +33,11 @@ int main() {
         }
         k.push_back(p);
     }
+
+//    Packet p(new ByteGF[2], 2);
+//    p.data_[0] = 4;
+//    p.data_[1] = 7;
+//    k.push_back(p);
 
     //print out original data k
     std::cout<< std::endl << "Original packages K" << std::endl;
