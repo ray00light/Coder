@@ -11,9 +11,10 @@ int main() {
 
     std::vector<Packet> k,n,r;
 
-    int numPack = 3;
-    int maxSize = 20;
+    int numPack = 4;
+    int maxSize = 8;
     int extraPacks = 1;
+    int packetsToLose = 1;
 
     Coder c;
 
@@ -54,16 +55,25 @@ int main() {
 
 
     //print out data encoded
-    std::cout << std::endl << "Encoded packages N" << std::endl;
-    for (int j = 0; j < n.size(); ++j) {
-        std::cout << "Packet " << j << ": ";
-        n.at(j).toString();
-        std::cout << std::endl;
-    }
+//    std::cout << std::endl << "Encoded packages N" << std::endl;
+//    for (int j = 0; j < n.size(); ++j) {
+//        std::cout << "Packet " << j << ": ";
+//        n.at(j).toString();
+//        std::cout << std::endl;
+//    }
     std::cout << std:: endl << "Encode time execution: " << (stop_e-start_e)/double(CLOCKS_PER_SEC)*1000
               << " miliseconds " <<  std::endl;
 
     //lose packets simulation
+//    n = c.losePackets(n);
+    n = c.losePackets(n,packetsToLose);
+    //print out data encoded
+//    std::cout << std::endl << "Encoded packages N after lose emulation " << std::endl;
+//    for (int j = 0; j < n.size(); ++j) {
+//        std::cout << "Packet " << j << ": ";
+//        n.at(j).toString();
+//        std::cout << std::endl;
+//    }
 
     //decode n
     int start_d=clock();

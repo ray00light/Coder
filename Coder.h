@@ -26,6 +26,10 @@ public:
     int maxSizePackK(std::vector<Packet> packets);
 
     int getMaxSeq(std::vector<Packet> n);
+
+    std::vector<Packet> losePackets(std::vector<Packet> n);
+
+    std::vector<Packet> losePackets(std::vector<Packet> n, int numPacketsToLose);
 };
 
 
