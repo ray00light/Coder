@@ -28,15 +28,18 @@ std::vector<Packet> Coder::encode(std::vector<Packet> k, int numExtraPackets) {
     srand(this->seed);
 //    ByteGF coeffMat[(k.size()+numExtraPackets) * maxPacketSize][maxPacketSize * k.size()];
     int start_e1 = clock();
-    ByteGF **coeffMat = new ByteGF*[(k.size()+numExtraPackets) * maxPacketSize];//[maxPacketSize * k.size()];
-    for (int k1 = 0; k1 < (k.size()+numExtraPackets) * maxPacketSize; ++k1) {
-        coeffMat[k1] = new ByteGF[maxPacketSize * k.size()];
-    }
-    for (int i = 0; i < (k.size()+numExtraPackets) * maxPacketSize; ++i) {
-        for (int j = 0; j < maxPacketSize * k.size(); ++j) {
-            coeffMat[i][j] = rand() % 255 + 1;
+    ByteGF **coeffMat = new ByteGF*[k.size() + numExtraPackets];//[maxPacketSize * k.size()];
+    for (int k1 = 0; k1 < k.size() + numExtraPackets; ++k1) {
+        int numCoeff = k.size();
+//        if (maxPacketSize > k.size()){
+//            numCoeff = maxPacketSize;
+//        }
+        coeffMat[k1] = new ByteGF[numCoeff];
+        for (int j = 0; j < numCoeff; ++j) {
+            coeffMat[k1][j] = rand() % 255 + 1;
         }
     }
+
     int stop_e1 = clock();
 //    std::cout << std:: endl << "Time execution creating coefficients before encode: " << (stop_e1-start_e1)/double(CLOCKS_PER_SEC)*1000
 //              << " miliseconds " <<  std::endl;
@@ -49,12 +52,16 @@ std::vector<Packet> Coder::encode(std::vector<Packet> k, int numExtraPackets) {
 //    coeffMat[3][0] = 3;
 //    coeffMat[3][1] = 4;
     //print coefficients matrix
-//    std::cout << "coefficients matrix before encode" << std::endl;
-//    for (int i=0;i<(k.size()+numExtraPackets) * maxPacketSize;i++){
-//        for ( int j=0;j<maxPacketSize * k.size();j++)
-//            std::cout <<coeffMat[i][j]<< " ";
-//        std::cout<<"\n";
-//    }
+    std::cout << "coefficients matrix before encode" << std::endl;
+    for (int i=0;i<(k.size()+numExtraPackets);i++){
+        int numCoeff = k.size();
+//        if (maxPacketSize > k.size()){
+//            numCoeff = maxPacketSize;
+//        }
+        for ( int j=0;j<numCoeff ;j++)
+            std::cout <<coeffMat[i][j]<< " ";
+        std::cout<<"\n";
+    }
 //    std::cout << "calculate each paquet breakpoint 1" << std::endl;
     //calculate each packet
     int start_e2 = clock();
@@ -68,22 +75,33 @@ std::vector<Packet> Coder::encode(std::vector<Packet> k, int numExtraPackets) {
             // for each entry of new packet we have to multiply different coefficient
             ByteGF entry;
             for (int subi = 0; subi < k.size(); ++subi) {
-                ByteGF subEntry;
-                for (int i = 0; i < maxPacketSize; ++i) {
-                    ByteGF a;
-                    if(k[subi].pilo_size_ > i){
-                        a = k[subi].data_[i];
-                    }
-//                    if (subi < k.size() & k[subi].pilo_size_ > i){
-//                        a = k[subi].data_[i];
-//                    } else {
-//                        a = 0;
-//                    }
-                    subEntry = subEntry + coeffMat[ei + (pi * maxPacketSize)][(subi * maxPacketSize) + i] * a;
+                ByteGF a,b;
+                if(k[subi].pilo_size_ > ei){
+                    a = k[subi].data_[ei];
                 }
-                entry = entry + subEntry;
+//                if (subi < maxPacketSize){
+//                    b = coeffMat[pi][subi];
+//                }
+                b = coeffMat[pi][subi];
+                entry = entry + b * a;
+//                std::cout <<a << "*" << b << " ";
+
+//                for (int i = 0; i < maxPacketSize; ++i) {
+//                    ByteGF a;
+//                    if(k[subi].pilo_size_ > i){
+//                        a = k[subi].data_[i];
+//                    }
+////                    if (subi < k.size() & k[subi].pilo_size_ > i){
+////                        a = k[subi].data_[i];
+////                    } else {
+////                        a = 0;
+////                    }
+//                    subEntry = subEntry + coeffMat[ei + (pi * maxPacketSize)][(subi * maxPacketSize) + i] * a;
+//                }
+//                entry = entry + subEntry;
             }
             e.data_[ei] = entry;
+//            std::cout <<entry <<  std::endl;
         }
 //        std::cout << "calculate each paquet breakpoint 3" << std::endl;
         //add header==========================
@@ -179,13 +197,11 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
 //    ByteGF coeffMat[maxSeq * n.size()][maxPacketSize * numPacksToDecode];
 //    std::cout << "breakpoint decode before create coeffMat" << std::endl;
     int start_d1 = clock();
-    ByteGF **coeffMat  = new ByteGF*[(maxSeq +1) * maxPacketSize];
-    for (int i1 = 0; i1 < (maxSeq +1) * maxPacketSize; ++i1) {
-        coeffMat[i1] = new ByteGF[maxPacketSize * numPacksToDecode];
-    }
-    for (int i = 0; i < (maxSeq +1) * maxPacketSize; ++i) {
-        for (int j = 0; j < maxPacketSize * numPacksToDecode; ++j) {
-            coeffMat[i][j] = rand() % 255 + 1;
+    ByteGF **coeffMat  = new ByteGF*[(maxSeq +1)];
+    for (int i1 = 0; i1 < (maxSeq +1); ++i1) {
+        coeffMat[i1] = new ByteGF[numPacksToDecode];
+        for (int j = 0; j < numPacksToDecode; ++j) {
+            coeffMat[i1][j] = rand() % 255 + 1;
         }
     }
     int stop_d1 = clock();
@@ -206,7 +222,15 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
 //    std::cout << "breakpoint coefficients matrix created" << std::endl;
     //populate extended matrix with coefficients and extended entry
     // the populated matrix would be created with first packages of n until numOriginalPackets
+    //decode by each entry
     int start_d2 = clock();
+    for (int k1 = 0; k1 < numPacksToDecode; ++k1) {
+        int x = numPacksToDecode;
+        ByteGF **extendedMat = new ByteGF*[x];
+        for (int j1 = 0; j1 < x; ++j1) {
+            extendedMat[j1] = new ByteGF[x+1];
+        }
+    }
     int x = maxPacketSize * numPacksToDecode;
 //    ByteGF extendedMat[x][x + 1];
     ByteGF **extendedMat = new ByteGF*[x];
