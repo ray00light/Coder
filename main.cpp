@@ -12,7 +12,7 @@ int main() {
     std::vector<Packet> k,n,r;
 
     int numPack = 4;
-    int maxSize = 7;
+    int maxSize = 10;
     int extraPacks = 1;
     int packetsToLose = 1;
 
