@@ -68,12 +68,12 @@ int main() {
 //    n = c.losePackets(n);
     n = c.losePackets(n,packetsToLose);
     //print out data encoded
-//    std::cout << std::endl << "Encoded packages N after lose emulation " << std::endl;
-//    for (int j = 0; j < n.size(); ++j) {
-//        std::cout << "Packet " << j << ": ";
-//        n.at(j).toString();
-//        std::cout << std::endl;
-//    }
+    std::cout << std::endl << "Encoded packages N after lose emulation " << std::endl;
+    for (int j = 0; j < n.size(); ++j) {
+        std::cout << "Packet " << j << ": ";
+        n.at(j).toString();
+        std::cout << std::endl;
+    }
 
     //decode n
     int start_d=clock();
