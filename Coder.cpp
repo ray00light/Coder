@@ -52,16 +52,7 @@ std::vector<Packet> Coder::encode(std::vector<Packet> k, int numExtraPackets) {
 //    coeffMat[3][0] = 3;
 //    coeffMat[3][1] = 4;
     //print coefficients matrix
-//    std::cout << "coefficients matrix before encode" << std::endl;
-//    for (int i=0;i<(k.size()+numExtraPackets);i++){
-//        int numCoeff = k.size();
-////        if (maxPacketSize > k.size()){
-////            numCoeff = maxPacketSize;
-////        }
-//        for ( int j=0;j<numCoeff ;j++)
-//            std::cout <<coeffMat[i][j]<< " ";
-//        std::cout<<"\n";
-//    }
+//    std::w
 //    std::cout << "calculate each paquet breakpoint 1" << std::endl;
     //calculate each packet
     int start_e2 = clock();
@@ -192,10 +183,10 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
 
     //create coeffMat
     maxSeq = getMaxSeq(n);
-    maxPacketSize = maxSizePackK(n);
+    maxPacketSize = n.at(0).getMax_size_packet_();// maxSizePackK(n);
     srand(n.at(0).getSeed_batch());
 //    ByteGF coeffMat[maxSeq * n.size()][maxPacketSize * numPacksToDecode];
-//    std::cout << "breakpoint decode before create coeffMat" << std::endl;
+//    std::cout << "breakpoint decode before create coeffMat maxsize " << maxPacketSize << std::endl;
     int start_d1 = clock();
     ByteGF **coeffMat  = new ByteGF*[(maxSeq +1)];
     for (int i1 = 0; i1 < (maxSeq +1); ++i1) {
@@ -246,6 +237,7 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
                 }
             }
         }
+//        std::cout << "breakpoint decode after populate extended matrix " << l1 << std::endl;
         //print the new matrix
 //        std::cout << "extended matrix populated  "<< l1 << std::endl;
 //        for (int i=0;i<x;i++){
@@ -283,6 +275,7 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
         }
         int stop_d4 = clock();
         result[l1] = subResult;
+//        std::cout << "breakpoint decode after decode extended matrix " << l1 << std::endl;
 //        for (int l = 0; l < x; ++l) {
 //            std::cout << subResult[l] << " ";
 //        }
@@ -394,10 +387,11 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
 //    }
     for (int m = 0; m < numPacksToDecode; ++m) {
         ByteGF temp[n.at(0).original_sizes_[m]];
-        for (int i = 0; i < n.at(0).original_sizes_[m]; ++i) {
+        for (int i = 0; i < n.at(0).original_sizes_[m]; i++) {
 //            for (int j = 0; j < ; ++j) {
 //
 //            }
+//            std::cout << "BK decode " << i << std::endl;
             temp[i] = result[i][m];
         }
         Packet t(temp, n.at(0).original_sizes_[m]);
@@ -407,6 +401,7 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
         t.setEncoded_(false);
         k.push_back(t);
     }
+//    std::cout << "breakpoint decode after generate k packets" << std::endl;
 //    for (int m = 0; m < numPacksToDecode; ++m) {
 //        ByteGF temp[n.at(0).original_sizes_[m]];
 //        for (int i = 0; i < n.at(0).original_sizes_[m]; ++i) {

@@ -12,7 +12,7 @@ int main() {
     std::vector<Packet> k,n,r;
 
     int numPack = 3;
-    int maxSize = 4;
+    int maxSize = 8;
     int extraPacks = 1;
     int packetsToLose = 1;
 
@@ -34,7 +34,22 @@ int main() {
         }
         k.push_back(p);
     }
-
+//    Packet p0(new ByteGF[3],3);
+//    p0.data_[0] = 20;
+//    p0.data_[1] = 51;
+//    p0.data_[2] = 38;
+//    k.push_back(p0);
+//    Packet p1(new ByteGF[4],4);
+//    p1.data_[0] = 251;
+//    p1.data_[1] = 193;
+//    p1.data_[2] = 90;
+//    p1.data_[3] = 121;
+//    k.push_back(p1);
+//    Packet p2(new ByteGF[3],3);
+//    p2.data_[0] = 151;
+//    p2.data_[1] = 25;
+//    p2.data_[2] = 174;
+//    k.push_back(p2);
 //    Packet p(new ByteGF[2], 2);
 //    p.data_[0] = 4;
 //    p.data_[1] = 7;
@@ -85,6 +100,8 @@ int main() {
     for (int j = 0; j < r.size(); ++j) {
         std::cout << "Packet " << j << ": ";
         r.at(j).toString();
+        for (int i = r.at(j).getPilo_size_(); i < maxSize; ++i)std::cout << "\t";
+        k.at(j).toString();
         std::cout << std::endl;
     }
     std::cout << std:: endl << "Decode time execution: " << (stop_d-start_d)/double(CLOCKS_PER_SEC)*1000
