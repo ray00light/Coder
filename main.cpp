@@ -119,7 +119,7 @@ void runTest(int numPack,int maxSize,int extraPacks,int packetsToLose){
 
 int main() {
 
-    int numPack = 3;
+    int numPack = 100;
     int maxSize = 1500;
     int extraPacks = 1;
     int packetsToLose = 1;
