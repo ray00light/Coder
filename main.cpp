@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <ctime>
+#include <iomanip>
 
 #include "Packet.h"
 #include "Coder.h"
@@ -23,7 +24,7 @@ void runTest(int numPack,int maxSize,int extraPacks,int packetsToLose){
     // initialize K with random packet sizes and random data
     for (int i = 0; i < numPack; ++i) {
         //initialize packet
-        int size = rand() % maxSize + 1;
+        int size = rand() % maxSize + 1; // set to 1500 for maximum
         Packet p(new ByteGF[size], size);
         for (int j = 0; j < p.pilo_size_ ; ++j) {
             p.data_[j] = rand() % 255;
@@ -92,19 +93,23 @@ void runTest(int numPack,int maxSize,int extraPacks,int packetsToLose){
     int stop_d = clock();
 
     //print out data decoded
-//    std::cout << std::endl << "Decoded packages R" << std::endl;
-//    for (int j = 0; j < r.size(); ++j) {
-//        std::cout << "Packet " << j << ": ";
-//        r.at(j).toString();
-//        for (int i = r.at(j).getPilo_size_(); i <= maxSize; ++i){
+    std::cout << std::endl << "Decoded packages R" << std::endl;
+    for (int j = 0; j < r.size(); ++j) {
+        std::cout << "Packet " << j << ": ";
+        r.at(j).toString();
+        std::string f = "\t";
+        for (int i = r.at(j).getPilo_size_(); i <= maxSize; ++i){
+            f.append("\t");
 //            std::cout << "\t";
 //            if((r.at(j).getPilo_size_() == maxSize) && i == maxSize)
 //                std::cout << "\t";
-//        }
-//
-//        k.at(j).toString();
-//        std::cout << std::endl;
-//    }
+        }
+//        if((r.at(j).getPilo_size_() == maxSize))std::cout << "\t";
+        std::cout << f;
+//        std::cout << std::setw(maxSize - r.at(j).getPilo_size_() + 10);
+        k.at(j).toString();
+        std::cout << std::endl;
+    }
     std::cout << std:: endl << "Decode time execution: " << (stop_d-start_d)/double(CLOCKS_PER_SEC)*1000
               << " miliseconds " <<  std::endl;
 
@@ -119,11 +124,11 @@ void runTest(int numPack,int maxSize,int extraPacks,int packetsToLose){
 
 int main() {
 
-    int numPack = 100;
-    int maxSize = 1500;
+    int numPack = 10;
+    int maxSize = 20;
     int extraPacks = 1;
     int packetsToLose = 1;
-    int numIterations = 1;
+    int numIterations = 200;
 
     for (int i=0; i < numIterations; ++i){
 //        srand(time(NULL));
