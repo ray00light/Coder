@@ -10,6 +10,12 @@
 #include <vector>
 
 
+bool Packet::equalTo(const Packet &p){
+    for (int i = 0; i < p.getPilo_size_(); ++i) {
+        if (this->data_[i] != p.data_[i]) return false;
+    }
+    return true;
+}
 
 Packet::Packet(const Packet &p) {
     ByteGF *temp = new ByteGF[p.pilo_size_];

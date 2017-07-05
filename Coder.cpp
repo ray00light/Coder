@@ -26,17 +26,17 @@ std::vector<Packet> Coder::encode(std::vector<Packet> k, int numExtraPackets) {
     n.reserve(k.size()+ numExtraPackets);
 
     srand(this->seed);
-//    ByteGF coeffMat[(k.size()+numExtraPackets) * maxPacketSize][maxPacketSize * k.size()];
     int start_e1 = clock();
-    ByteGF **coeffMat = new ByteGF*[k.size() + numExtraPackets];//[maxPacketSize * k.size()];
+//    ByteGF **coeffMat = new ByteGF*[k.size() + numExtraPackets];//[maxPacketSize * k.size()];
+    ByteGF coeffMat[k.size() + numExtraPackets][k.size()];
     for (int k1 = 0; k1 < k.size() + numExtraPackets; ++k1) {
-        int numCoeff = k.size();
+//        int numCoeff = k.size();
 //        if (maxPacketSize > k.size()){
 //            numCoeff = maxPacketSize;
 //        }
-        coeffMat[k1] = new ByteGF[numCoeff];
-        for (int j = 0; j < numCoeff; ++j) {
-            coeffMat[k1][j] = rand() % 255 + 1;
+//        coeffMat[k1] = new ByteGF[k.size()];
+        for (int j = 0; j < k.size(); ++j) {
+            coeffMat[k1][j] = rand() % 255; // + 1;
         }
     }
 //    std::cout << "coefficients matrix before decode" << std::endl;
@@ -48,16 +48,7 @@ std::vector<Packet> Coder::encode(std::vector<Packet> k, int numExtraPackets) {
     int stop_e1 = clock();
 //    std::cout << std:: endl << "Time execution creating coefficients before encode: " << (stop_e1-start_e1)/double(CLOCKS_PER_SEC)*1000
 //              << " miliseconds " <<  std::endl;
-//    coeffMat[0][0] = 7;
-//    coeffMat[0][1] = 3;
-//    coeffMat[1][0] = 4;
-//    coeffMat[1][1] = 5;
-//    coeffMat[2][0] = 1;
-//    coeffMat[2][1] = 2;
-//    coeffMat[3][0] = 3;
-//    coeffMat[3][1] = 4;
     //print coefficients matrix
-//    std::w
 //    std::cout << "calculate each paquet breakpoint 1" << std::endl;
     //calculate each packet
     int start_e2 = clock();
@@ -75,29 +66,10 @@ std::vector<Packet> Coder::encode(std::vector<Packet> k, int numExtraPackets) {
                 if(k[subi].pilo_size_ > ei){
                     a = k[subi].data_[ei];
                 }
-//                if (subi < maxPacketSize){
-//                    b = coeffMat[pi][subi];
-//                }
                 b = coeffMat[pi][subi];
                 entry = entry + b * a;
-//                std::cout <<a << "*" << b << " ";
-
-//                for (int i = 0; i < maxPacketSize; ++i) {
-//                    ByteGF a;
-//                    if(k[subi].pilo_size_ > i){
-//                        a = k[subi].data_[i];
-//                    }
-////                    if (subi < k.size() & k[subi].pilo_size_ > i){
-////                        a = k[subi].data_[i];
-////                    } else {
-////                        a = 0;
-////                    }
-//                    subEntry = subEntry + coeffMat[ei + (pi * maxPacketSize)][(subi * maxPacketSize) + i] * a;
-//                }
-//                entry = entry + subEntry;
             }
             e.data_[ei] = entry;
-//            std::cout <<entry <<  std::endl;
         }
 //        std::cout << "calculate each paquet breakpoint 3" << std::endl;
         //add header==========================
@@ -190,18 +162,22 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
     maxSeq = getMaxSeq(n);
     maxPacketSize = n.at(0).getMax_size_packet_();// maxSizePackK(n);
     srand(n.at(0).getSeed_batch());
-//    ByteGF coeffMat[maxSeq * n.size()][maxPacketSize * numPacksToDecode];
 //    std::cout << "breakpoint decode before create coeffMat maxsize " << maxPacketSize << std::endl;
     int start_d1 = clock();
     ByteGF **coeffMat  = new ByteGF*[(maxSeq +1)];
+//    ByteGF coeffMat[maxSeq +1][numPacksToDecode];
     for (int i1 = 0; i1 < (maxSeq +1); ++i1) {
         coeffMat[i1] = new ByteGF[numPacksToDecode];
         for (int j = 0; j < numPacksToDecode; ++j) {
-            coeffMat[i1][j] = rand() % 255 + 1;
+            coeffMat[i1][j] = rand() % 255; // + 1;
         }
     }
     ByteGF **coeffMat2 = new ByteGF*[numPacksToDecode];
+//    ByteGF coeffMat2[numPacksToDecode][numPacksToDecode];
     for (int l = 0; l < numPacksToDecode; ++l) {
+//        for (int i = 0; i < numPacksToDecode; ++i) {
+//            coeffMat2[l][i] = coeffMat[n.at(l).getSequence_()][i];
+//        }
         coeffMat2[l] = coeffMat[n.at(l).getSequence_()];
     }
     // decomposition of coeff2
@@ -209,6 +185,7 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
     for (int j1 = 0; j1 < numPacksToDecode; ++j1) {
         lu[j1] = new ByteGF[numPacksToDecode];
     }
+//    ByteGF lu[numPacksToDecode][numPacksToDecode];
     ByteGF sum;
     for (int i = 0; i < numPacksToDecode; i++)
     {
@@ -230,35 +207,24 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
     int stop_d1 = clock();
 //    std::cout << std:: endl << "Time execution for creating coefficients to decode : " << (stop_d1-start_d1)/double(CLOCKS_PER_SEC)*1000
 //              << " miliseconds " <<  std::endl;
-//    coeffMat[0][0] = 7;
-//    coeffMat[0][1] = 3;
-//    coeffMat[1][0] = 4;
-//    coeffMat[1][1] = 5;
     //print coefficients matrix
 //    std::cout << "coefficients matrix before decode" << std::endl;
 //    for (int i=0;i<numPacksToDecode;i++){
 //        for ( int j=0;j<numPacksToDecode;j++)
-//            std::cout <<coeffMat2[i][j]<< " ";
-//        std::cout<<"\n";
+//            std::cout << coeffMat2[i][j] << " ";
+//        std::cout << std:: endl;
 //    }
 //    std::cout << std:: endl;
 //    std::cout << "breakpoint coefficients matrix created" << std::endl;
-    //populate extended matrix with coefficients and extended entry
-    // the populated matrix would be created with first packages of n until numOriginalPackets
     //decode by each entry
-//    for (int k1 = 0; k1 < numPacksToDecode; ++k1) {
-//        int x = numPacksToDecode;
-//        ByteGF **extendedMat = new ByteGF*[x];
-//        for (int j1 = 0; j1 < x; ++j1) {
-//            extendedMat[j1] = new ByteGF[x+1];
-//        }
-//    }
-    ByteGF **result= new ByteGF*[numPacksToDecode];
+    ByteGF **result= new ByteGF*[maxPacketSize];
     for (int l1 = 0; l1 < maxPacketSize; ++l1) {
         ByteGF *rightPart = new ByteGF[numPacksToDecode];
         for (int i = 0; i < numPacksToDecode; ++i) {
             rightPart[i] = n.at(i).data_[l1];
+//            std::cout << rightPart[i] << " ";
         }
+//        std::cout << std:: endl;
         // find solution of Ly = b
         ByteGF *y = new ByteGF[numPacksToDecode];
         for (int i = 0; i < numPacksToDecode; i++)
@@ -267,7 +233,9 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
             for (int k = 0; k < i; k++)
                 sum = sum + lu[i][k] * y[k];
             y[i] = rightPart[i] - sum;
+//            std::cout << y[i] << " ";
         }
+//        std::cout << std:: endl;
         // find solution of Ux = y
         ByteGF *x = new ByteGF[numPacksToDecode];
         for (int i = numPacksToDecode - 1; i >= 0; i--)
@@ -276,182 +244,36 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
             for (int k = i + 1; k < numPacksToDecode; k++)
                 sum = sum + lu[i][k] * x[k];
             x[i] = (1 / lu[i][i]) * (y[i] - sum);
+//            std::cout << x[i] << "x[" << i << "]"<< " ";
         }
+//        std::cout <<"     " << l1 <<  std::endl;
         result[l1] = x;
+//        std::cout << "Iteration " << l1<< std:: endl;
+//        for (int j = 0; j < numPacksToDecode; ++j) {
+//            std::cout << result[l1][j] << " ";
+//        }
+//        std::cout << std:: endl;
+//        delete y;
+//        delete x;
+//        delete rightPart;
     }
+//    for (int k1 = 0; k1 < maxPacketSize; ++k1) {
+//        std::cout << "Iteration " << k1<< std:: endl;
+//        for (int i = 0; i < numPacksToDecode; ++i) {
+//            std::cout << result[k1][i] << " ";
+//        }
+//        std::cout << std:: endl;
+//    }
     int start_d2 = clock();
-//    ByteGF **result= new ByteGF*[numPacksToDecode];
-//    for (int l1 = 0; l1 < maxPacketSize; ++l1) {
-//        //create extended matrix
-//        int x = numPacksToDecode;
-//        ByteGF **extendedMat= new ByteGF*[x];
-//        for (int i = 0; i < x ; ++i) {
-//            extendedMat[i] = new ByteGF[x + 1];
-//            for (int j = 0; j < x + 1; ++j) {
-//                if(j < x){
-//                    extendedMat[i][j] = coeffMat[n.at(i).getSequence_()][j];
-//                } else {
-//                    extendedMat[i][j] = n.at(i).data_[l1];
-//                }
-//            }
-//        }
-////        std::cout << "breakpoint decode after populate extended matrix " << l1 << std::endl;
-//        //print the new matrix
-////        std::cout << "extended matrix populated  "<< l1 << std::endl;
-////        for (int i=0;i<x;i++){
-////            for ( int j=0;j<x +1;j++)std::cout <<extendedMat[i][j]<< " ";
-////            std::cout<<"\n";
-////        }
-//        ByteGF *subResult = new ByteGF[x];
-//        //Pivotisation
-//        for (int i=0;i<x;i++)
-//            for (int k=i+1;k<x;k++)
-//                if (extendedMat[i][i]<extendedMat[k][i])
-//                    for (int j=0;j<=x;j++){
-//                        ByteGF temp=extendedMat[i][j];
-//                        extendedMat[i][j]=extendedMat[k][j];
-//                        extendedMat[k][j]=temp;
-//                    }
-//        //loop to perform the gauss elimination
-//        int start_d3 = clock();
-//        for (int i=0;i<x-1;i++)
-//            for (int k=i+1;k<x;k++){
-//                ByteGF t=extendedMat[k][i]/extendedMat[i][i];
-//                for (int j=0;j<=x;j++)
-//                    extendedMat[k][j]=extendedMat[k][j]-t*extendedMat[i][j];    //make the elements below the pivot elements equal to zero or elimnate the variables
-//            }
-//        int stop_d3 = clock();
-//        //back-substitution
-//        int start_d4 = clock();
-//        for (int i=x-1;i>=0;i--){
-//            //x is an array whose values correspond to the values of x,y,z..
-//            subResult[i]=extendedMat[i][x];                //make the variable to be calculated equal to the rhs of the last equation
-//            for (int j=i+1;j<x;j++)
-//                if (j!=i)            //then subtract all the lhs values except the coefficient of the variable whose value is being calculated
-//                    subResult[i]=subResult[i]-extendedMat[i][j]*subResult[j];
-//            subResult[i]=subResult[i]/extendedMat[i][i];            //now finally divide the rhs by the coefficient of the variable to be calculated
-//        }
-//        int stop_d4 = clock();
-//        result[l1] = subResult;
-////        std::cout << "breakpoint decode after decode extended matrix " << l1 << std::endl;
-////        for (int l = 0; l < x; ++l) {
-////            std::cout << subResult[l] << " ";
-////        }
-////        std::cout << std::endl;
-//    }
-//    std::cout << "breakpoint decoder - entries decoded" << std::endl;
-//    int x = maxPacketSize * numPacksToDecode;
-////    ByteGF extendedMat[x][x + 1];
-//    ByteGF **extendedMat = new ByteGF*[x];
-//    for (int j1 = 0; j1 < x; ++j1) {
-//        extendedMat[j1] = new ByteGF[x+1];
-//    }
-//    for (int l = 0; l < numPacksToDecode; ++l) {
-//        int seq = n.at(l).getSequence_();
-//        for (int i = 0; i < maxPacketSize; ++i) {
-//            for (int j = 0; j < x + 1 ; ++j) {
-//                //the extended entry would be an element of n
-//                if (j == x){
-//                    extendedMat[i + (l * maxPacketSize)][j] = n.at(l).data_[i];
-//                } else {
-//                    extendedMat[i + (l * maxPacketSize)][j] = coeffMat[i + (seq * maxPacketSize)][j];
-//                }
-////                std::cout << extendedMat[i + (l * maxPacketSize)][j] << " ";
-//            }
-////            std::cout << std:: endl;
-//        }
-//    }
-//    int stop_d2 = clock();
-////    std::cout << std:: endl << "Time execution for creating extended matrix: " << (stop_d2-start_d2)/double(CLOCKS_PER_SEC)*1000
-////              << " miliseconds " <<  std::endl;
-////    std::cout << "breakpoint extended matrix populated" << std::endl;
-////    std::cout<<"\nThe matrix populated\n";
-////    //print the new matrix
-////    for (int i=0;i<x;i++){
-////        for ( int j=0;j<=x;j++)
-////            std::cout <<extendedMat[i][j]<< " ";
-////        std::cout<<"\n";
-////    }
-//    ByteGF result[x];
-//    //Pivotisation
-//    for (int i=0;i<x;i++)
-//        for (int k=i+1;k<x;k++)
-//            if (extendedMat[i][i]<extendedMat[k][i])
-//                for (int j=0;j<=x;j++){
-//                    ByteGF temp=extendedMat[i][j];
-//                    extendedMat[i][j]=extendedMat[k][j];
-//                    extendedMat[k][j]=temp;
-//                }
-////    std::cout<<"breakpoint after pivotisation\n";
-//    //print the new matrix
-////    for (int i=0;i<x;i++){
-////        for ( int j=0;j<=x;j++)
-////            std::cout <<extendedMat[i][j]<< " ";
-////        std::cout<<"\n";
-////    }
-//    //loop to perform the gauss elimination
-//    int start_d3 = clock();
-//    for (int i=0;i<x-1;i++)
-//        for (int k=i+1;k<x;k++){
-//            ByteGF t=extendedMat[k][i]/extendedMat[i][i];
-//            for (int j=0;j<=x;j++)
-//                extendedMat[k][j]=extendedMat[k][j]-t*extendedMat[i][j];    //make the elements below the pivot elements equal to zero or elimnate the variables
-//        }
-//    int stop_d3 = clock();
-////    std::cout << std:: endl << "Time execution performing gauss elimination: " << (stop_d3-start_d3)/double(CLOCKS_PER_SEC)*1000
-////              << " miliseconds " <<  std::endl;
-////    std::cout<<"breakpoint after gauss elimination\n";
-////    std::cout<<"\n\nThe matrix after gauss-elimination is as follows:\n";
-//    //print the new matrix
-////    for (int i=0;i<x;i++){
-////        for (int j=0;j<=x;j++)
-////            std::cout<<extendedMat[i][j]<<std::setw(16);
-////        std::cout<<"\n";
-////    }
-//    //back-substitution
-//    int start_d4 = clock();
-//    for (int i=x-1;i>=0;i--){
-//        //x is an array whose values correspond to the values of x,y,z..
-//        result[i]=extendedMat[i][x];                //make the variable to be calculated equal to the rhs of the last equation
-//        for (int j=i+1;j<x;j++)
-//            if (j!=i)            //then subtract all the lhs values except the coefficient of the variable whose value is being calculated
-//                result[i]=result[i]-extendedMat[i][j]*result[j];
-//        result[i]=result[i]/extendedMat[i][i];            //now finally divide the rhs by the coefficient of the variable to be calculated
-//    }
-//    int stop_d4 = clock();
-////    std::cout << std:: endl << "Time execution performing back-sbustraction: " << (stop_d4-start_d4)/double(CLOCKS_PER_SEC)*1000
-////              << " miliseconds " <<  std::endl;
-//    //Prepare k
     k.reserve(numPacksToDecode);
-//    //retrieve original sizes
-//    unsigned int original_sizes[numPacksToDecode];
-//    union
-//    {
-//        unsigned long i;
-//        unsigned char byte[sizeof(unsigned long)];
-//    } temp;
-//    for (int j = 0; j < numPacksToDecode ; ++j) {
-//        temp.i=0;
-//        for (int i = 0; i < sizeof(int); ++i) {
-//            ByteGF t = n.at(0).data_[n.at(0).getPilo_size_()- sizeof(int) - sizeof(long) - sizeof(long) -
-//                                   ((numPacksToDecode*sizeof(int))) + (i + (j * sizeof(int)))];
-//            temp.byte[i] = t.poly();
-//        }
-//        original_sizes[j] = temp.i;
-//    }
-//    std::cout << std::endl << "Result " << std::endl;
-//    for (int k1 = 0; k1 < x; ++k1) {
-//         std::cout << result[k1] << " ";
-//    }
+
     for (int m = 0; m < numPacksToDecode; ++m) {
         ByteGF temp[n.at(0).original_sizes_[m]];
         for (int i = 0; i < n.at(0).original_sizes_[m]; i++) {
-//            for (int j = 0; j < ; ++j) {
-//
-//            }
-//            std::cout << "BK decode " << i << std::endl;
             temp[i] = result[i][m];
+//            std::cout << result[i][m] << " ";
         }
+//        std::cout << std:: endl;
         Packet t(temp, n.at(0).original_sizes_[m]);
         t.setNum_original_packets(numPacksToDecode);
         t.setSequence_(m);
@@ -459,19 +281,7 @@ std::vector<Packet> Coder::decode(std::vector<Packet> n) {
         t.setEncoded_(false);
         k.push_back(t);
     }
-//    std::cout << "breakpoint decode after generate k packets" << std::endl;
-//    for (int m = 0; m < numPacksToDecode; ++m) {
-//        ByteGF temp[n.at(0).original_sizes_[m]];
-//        for (int i = 0; i < n.at(0).original_sizes_[m]; ++i) {
-//            temp[i] = result[i + (m * maxPacketSize)];
-//        }
-//        Packet t(temp, n.at(0).original_sizes_[m]);
-//        t.setNum_original_packets(numPacksToDecode);
-//        t.setSequence_(m);
-//        t.setMax_size_packet_(maxPacketSize);
-//        t.setEncoded_(false);
-//        k.push_back(t);
-//    }
+
 //    std::cout<<"\nThe values of the variables are as follows:\n";
 //    for (int i=0;i<x;i++)
 //        std::cout<<result[i]<<std::endl;

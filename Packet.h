@@ -68,6 +68,8 @@ public:
     ByteGF *addHeader();
 
     ByteGF *removeHeader();
+
+    bool equalTo(const Packet &p);
 };
 
 
